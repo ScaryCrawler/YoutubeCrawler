@@ -13,7 +13,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @Configuration
 @EnableSwagger2
 public class SwaggerConfiguration {
-    private static final String BASE_PACKAGE = "com.crawler.youtube-crawler.rest-api.controller";
+    private static final String BASE_PACKAGE = "com.crawler.youtube_crawler.rest_api.controllers";
     private static final String TITLE = "Youtube Crawler";
     private static final String DESCRIPTION = "Youtube Crawler";
     private static final String VERSION = "v1";
