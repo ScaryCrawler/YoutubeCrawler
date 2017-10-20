@@ -20,7 +20,7 @@ public class JobService {
     public final JobDto createJob(final JobDto jobDto) {
         final JobDto createdJob = jobRepository.save(jobDto);
         createdJob.setStatus(JobStatus.NEW);
-        jobSender.sendJob(MessageBuilder.withPayload(createdJob).build());
+        jobSender.sendJob(createdJob);
         return createdJob;
     }
 }

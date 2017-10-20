@@ -10,6 +10,5 @@ import org.springframework.messaging.handler.annotation.Payload;
 
 @MessagingGateway(defaultRequestChannel = "messageJobChannel")
 public interface JobSender {
-    @Gateway
-    void sendJob(final Message<JobDto> job);
+    void sendJob(final JobDto job);
 }
