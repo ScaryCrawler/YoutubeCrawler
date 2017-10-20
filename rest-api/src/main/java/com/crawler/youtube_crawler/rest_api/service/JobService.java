@@ -1,5 +1,6 @@
 package com.crawler.youtube_crawler.rest_api.service;
 
+import com.crawler.youtube_crawler.core.constants.JobStatus;
 import com.crawler.youtube_crawler.core.dto.JobDto;
 import com.crawler.youtube_crawler.rest_api.configuration.MessagingConfiguration;
 import com.crawler.youtube_crawler.rest_api.producer.JobSender;
@@ -18,6 +19,7 @@ public class JobService {
 
     public final JobDto createJob(final JobDto jobDto) {
         final JobDto createdJob = jobRepository.save(jobDto);
+        createdJob.setStatus(JobStatus.NEW);
         jobSender.sendJob(MessageBuilder.withPayload(createdJob).build());
         return createdJob;
     }
