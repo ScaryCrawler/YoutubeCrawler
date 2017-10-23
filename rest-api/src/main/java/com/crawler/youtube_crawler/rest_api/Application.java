@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @SpringBootApplication
 @Controller
 @EnableAutoConfiguration(exclude={MultipartAutoConfiguration.class})
-@IntegrationComponentScan("com.crawler.youtube_crawler.rest_api")
+@ComponentScan("com.crawler.youtube_crawler.*")
 public class Application extends SpringBootServletInitializer {
     public static void main(final String[] arguments) throws Exception {
         SpringApplication.run(Application.class, arguments);

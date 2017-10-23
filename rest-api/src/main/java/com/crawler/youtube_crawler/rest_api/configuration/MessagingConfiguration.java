@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.annotation.IntegrationComponentScan;
-import org.springframework.integration.channel.DirectChannel;
 import org.springframework.integration.config.EnableIntegration;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.IntegrationFlows;
@@ -23,9 +22,9 @@ import java.util.Collections;
 
 @Configuration
 @EnableIntegration
-@IntegrationComponentScan(basePackages = "com.crawler.youtube_crawler.rest_api")
+@IntegrationComponentScan(basePackages = "com.crawler.youtube_crawler.*")
 public class MessagingConfiguration {
-    public final static String QUEUE_NAME = "jobChannel";
+    public final static String QUEUE_NAME = "job_queue";
 
     @Value("${activemq.broker.url}")
     private String brokerUrl;
@@ -58,7 +57,7 @@ public class MessagingConfiguration {
     }
 
     @Bean
-    public Queue jobStatusQueue() {
+    public Queue jobQueue() {
         return new ActiveMQQueue(QUEUE_NAME);
     }
 
@@ -72,7 +71,7 @@ public class MessagingConfiguration {
         return IntegrationFlows.from(messageJobChannel())
                 .transform(new ObjectToJsonTransformer())
                 .handle(Jms.outboundAdapter(jmsTemplate())
-                        .destination(jobStatusQueue()))
+                        .destination(jobQueue()))
                 .get();
     }
 }
