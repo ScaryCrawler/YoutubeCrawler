@@ -18,6 +18,7 @@ import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.messaging.MessageChannel;
 
 import javax.jms.Queue;
+import javax.jms.Session;
 
 @Configuration
 @EnableIntegration
@@ -52,6 +53,8 @@ public class MessagingConfiguration {
         listenerContainer.setConnectionFactory(pooledConnectionFactory());
         listenerContainer.setDestination(jobQueue());
         listenerContainer.setConcurrency(listenerConcurrency);
+        listenerContainer.setSessionAcknowledgeMode(Session.CLIENT_ACKNOWLEDGE);
+
 
         return listenerContainer;
     }
