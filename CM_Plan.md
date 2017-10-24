@@ -13,4 +13,9 @@ If you need some unfinished functional from other peoples or other branches - fe
 1.4 Before merge you feature you should merge master into you finished branch and resolve all conflicts locally.
 
 
+## Task tracker
+
+Trello: https://trello.com/b/CbtCQjo0/youtube-crawler
+
+
 ## Environment settings and requirements
