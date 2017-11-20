@@ -8,16 +8,16 @@ import java.util.*;
 
 @Component
 public class HashMapJobRepository implements JobRepository {
-    private Map<UUID, JobDto> parameterJobMap = new HashMap<>();
+    private Map<UUID, JobDto> map = new HashMap<>();
 
     @Override
     public JobDto read(@NonNull final UUID id) {
-        return parameterJobMap.get(id);
+        return map.get(id);
     }
 
     @Override
     public void setStatus(@NonNull UUID jobId, @NonNull String status) {
-        final JobDto job = parameterJobMap.get(jobId);
+        final JobDto job = map.get(jobId);
         if (!Optional.ofNullable(job).isPresent())
             throw new NoSuchElementException(String.format("Job repository does not contain job %s", jobId));
 
@@ -27,12 +27,12 @@ public class HashMapJobRepository implements JobRepository {
     @Override
     public JobDto create(@NonNull final JobDto job) {
         job.setId(UUID.randomUUID());
-        parameterJobMap.put(job.getId(), job);
+        map.put(job.getId(), job);
         return job;
     }
 
     @Override
     public void delete(@NonNull final UUID id) {
-        parameterJobMap.remove(id);
+        map.remove(id);
     }
 }
