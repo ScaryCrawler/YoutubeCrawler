@@ -10,7 +10,7 @@ import java.util.UUID;
 @Data
 @Setter
 @Getter
-public class JobDto implements Serializable {
+public class SubJobDto implements Serializable {
     private UUID id;
-    private String status;
+    private UUID jobId;
 }

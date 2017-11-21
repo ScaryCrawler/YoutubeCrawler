@@ -3,7 +3,7 @@ package com.crawler.youtube_crawler.worker.consumer;
 import com.crawler.youtube_crawler.core.constants.JobStatus;
 import com.crawler.youtube_crawler.core.dto.JobDto;
 import com.crawler.youtube_crawler.core.repository.JobRepository;
-import com.crawler.youtube_crawler.worker.handler.Handler;
+import com.crawler.youtube_crawler.worker.handler.JobHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.integration.annotation.ServiceActivator;
@@ -14,9 +14,9 @@ import java.util.UUID;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class Consumer {
+public class JobConsumer {
     private final JobRepository jobRepository;
-    private final Handler handler;
+    private final JobHandler jobHandler;
 
     @ServiceActivator(inputChannel = "messageJobChannel")
     public final void consumeJob(JobDto job) {
@@ -25,7 +25,7 @@ public class Consumer {
         log.info("Job " + jobId + " has been taken from queue");
         jobRepository.setStatus(jobId, JobStatus.IN_PROGRESS);
 
-        final String status = handler.accept(job);
+        final String status = jobHandler.accept(job);
 
         log.info("Job " + jobId + " has been handled and finished with status");
         jobRepository.setStatus(jobId, status);
