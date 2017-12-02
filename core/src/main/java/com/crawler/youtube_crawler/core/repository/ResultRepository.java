@@ -1,6 +1,5 @@
 package com.crawler.youtube_crawler.core.repository;
 
-import com.crawler.youtube_crawler.core.dto.JobDto;
 import com.crawler.youtube_crawler.core.dto.ResultDto;
 import lombok.NonNull;
 

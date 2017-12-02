@@ -1,11 +1,13 @@
 package com.crawler.youtube_crawler.core.repository;
 
-import com.crawler.youtube_crawler.core.dto.JobDto;
 import com.crawler.youtube_crawler.core.dto.ResultDto;
 import lombok.NonNull;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 @Component
 public class HashMapResultRepository implements ResultRepository {
