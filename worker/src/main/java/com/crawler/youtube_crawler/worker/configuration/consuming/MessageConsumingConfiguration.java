@@ -1,6 +1,7 @@
-package com.crawler.youtube_crawler.worker.configuration;
+package com.crawler.youtube_crawler.worker.configuration.consuming;
 
 import com.crawler.youtube_crawler.core.dto.JobDto;
+import lombok.RequiredArgsConstructor;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.apache.activemq.pool.PooledConnectionFactory;
 import org.apache.activemq.spring.ActiveMQConnectionFactory;
@@ -21,10 +22,9 @@ import javax.jms.Queue;
 import javax.jms.Session;
 
 @Configuration
-@EnableIntegration
-@IntegrationComponentScan(basePackages = "com.crawler.youtube_crawler.worker")
-public class MessagingConfiguration {
-    private final static String QUEUE_NAME = "job_queue";
+@RequiredArgsConstructor
+public abstract class MessageConsumingConfiguration {
+    private final String queueName;
 
     @Value("${activemq.broker.url}")
     private String brokerUrl;
@@ -77,7 +77,7 @@ public class MessagingConfiguration {
 
     @Bean
     public Queue jobQueue() {
-        return new ActiveMQQueue(QUEUE_NAME);
+        return new ActiveMQQueue(queueName);
     }
 
     @Bean

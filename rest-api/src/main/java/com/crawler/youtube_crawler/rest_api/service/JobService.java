@@ -3,9 +3,9 @@ package com.crawler.youtube_crawler.rest_api.service;
 import com.crawler.youtube_crawler.core.constants.JobStatus;
 import com.crawler.youtube_crawler.core.dto.JobDto;
 import com.crawler.youtube_crawler.core.dto.ResultDto;
+import com.crawler.youtube_crawler.core.repository.JobRepository;
 import com.crawler.youtube_crawler.core.repository.ResultRepository;
 import com.crawler.youtube_crawler.rest_api.producer.JobSender;
-import com.crawler.youtube_crawler.core.repository.JobRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
