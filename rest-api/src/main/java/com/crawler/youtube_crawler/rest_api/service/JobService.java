@@ -36,7 +36,7 @@ public class JobService {
     }
 
     public final List<ResultDto> getResults(final Long jobId) {
-        return resultRepository.findByJob(jobRepository.findOne(jobId));
+        return resultRepository.findByJobId(jobId);
     }
 
     public final JobDto getJob(final Long jobId) {
