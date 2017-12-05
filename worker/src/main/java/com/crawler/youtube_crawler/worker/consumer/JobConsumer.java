@@ -20,14 +20,15 @@ public class JobConsumer {
 
     @ServiceActivator(inputChannel = "messageJobChannel")
     public final void consumeJob(JobDto job) {
-        final UUID jobId = job.getId();
 
-        log.info("Job " + jobId + " has been taken from queue");
-        jobRepository.setStatus(jobId, JobStatus.IN_PROGRESS);
+        log.info("Job " + job.getId() + " has been taken from queue");
+        job.setStatus(JobStatus.IN_PROGRESS);
+        jobRepository.save(job);
 
         final String status = jobHandler.accept(job);
 
-        log.info("Job " + jobId + " has been handled and finished with status");
-        jobRepository.setStatus(jobId, status);
+        log.info("Job " + job.getId() + " has been handled and finished with status");
+        job.setStatus(status);
+        jobRepository.save(job);
     }
 }

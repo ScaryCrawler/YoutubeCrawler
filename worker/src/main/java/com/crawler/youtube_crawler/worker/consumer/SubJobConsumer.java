@@ -17,9 +17,9 @@ public class SubJobConsumer {
 
     @ServiceActivator(inputChannel = "messageSubJobChannel")
     public final void consumeJob(SubJobDto job) {
-        final UUID jobId = job.getId();
+//        final UUID jobId = job.getId();
 
-        log.info("SubJob " + jobId + " has been taken from queue");
+        log.info("SubJob " + job.getId() + " has been taken from queue");
 
         jobHandler.accept(job);
     }

@@ -23,13 +23,13 @@ final class JobController {
 
     @RequestMapping(method = RequestMethod.GET, value = "/results")
     @ResponseStatus(HttpStatus.OK)
-    public final Collection<ResultDto> getResult(@RequestBody String jobId) {
+    public final Collection<ResultDto> getResult(@RequestBody Long jobId) {
         return service.getResults(jobId);
     }
 
     @RequestMapping(method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
-    public final JobDto get(@RequestBody String jobId) {
+    public final JobDto get(@RequestBody Long jobId) {
         return service.getJob(jobId);
     }
 }

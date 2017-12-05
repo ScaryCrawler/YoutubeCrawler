@@ -16,7 +16,7 @@ public class SimpleJobHandler implements JobHandler {
     @Override
     public String accept(JobDto jobDto) {
         final SubJobDto subjob = new SubJobDto();
-        subjob.setJobId(jobDto.getId());
+        subjob.setJob(jobDto);
         subJobSender.sendSubJob(subjob);
         return JobStatus.FAILED;
     }
