@@ -14,7 +14,7 @@ import java.util.Collection;
 @RequestMapping(value = "job")
 @RequiredArgsConstructor
 final class JobController {
-    private final JobService service;
+    private JobService service;
 
     @RequestMapping(method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)

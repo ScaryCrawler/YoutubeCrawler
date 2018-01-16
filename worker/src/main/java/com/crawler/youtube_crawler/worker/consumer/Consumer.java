@@ -4,6 +4,8 @@ import com.crawler.youtube_crawler.core.constants.JobStatus;
 import com.crawler.youtube_crawler.core.dto.JobDto;
 import com.crawler.youtube_crawler.core.repository.JobRepository;
 import com.crawler.youtube_crawler.worker.handler.Handler;
+import com.crawler.youtube_crawler.worker.handler.SimpleHandler;
+import com.crawler.youtube_crawler.worker.handler.VideoIdHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.integration.annotation.ServiceActivator;
@@ -16,8 +18,9 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class Consumer {
     private final JobRepository jobRepository;
-    private final Handler handler;
+    private final SimpleHandler handler;
 
+    //TODO: check is processor already running
     @ServiceActivator(inputChannel = "messageJobChannel")
     public final void consumeJob(JobDto job) {
         final UUID jobId = job.getId();

@@ -17,4 +17,5 @@ import java.util.UUID;
 public class JobDto implements Serializable{
     private UUID id;
     private String status;
+    private String type;
 }

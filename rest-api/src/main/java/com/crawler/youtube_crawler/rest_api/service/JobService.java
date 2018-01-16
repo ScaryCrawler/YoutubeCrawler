@@ -7,6 +7,7 @@ import com.crawler.youtube_crawler.core.repository.ResultRepository;
 import com.crawler.youtube_crawler.rest_api.producer.JobSender;
 import com.crawler.youtube_crawler.core.repository.JobRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
