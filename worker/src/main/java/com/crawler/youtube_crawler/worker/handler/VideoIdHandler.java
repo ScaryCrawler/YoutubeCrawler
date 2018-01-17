@@ -10,6 +10,8 @@ import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.SearchListResponse;
 import com.google.api.services.youtube.model.SearchResult;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -23,18 +25,20 @@ import java.util.List;
  * Created by Настя on 20.11.2017.
  */
 @Component
+@RequiredArgsConstructor
 public class VideoIdHandler implements Processor {
 
-    @Autowired
-    private JobRepository repo;
+    private final JobRepository jobRepository;
 
     private static long NUMBER_OF_VIDEOS_RETURNED = 50;
 
-    @Autowired
-    private YouTubeApi youtube;
+    private final YouTubeApi youtube;
+
     @Value("${youtube.apikey}")
     private String apiKey;
+
     private YouTube.Search.List search;
+
     private List<String> videoIdsList = new ArrayList<>();
 
     @Override
@@ -83,7 +87,8 @@ public class VideoIdHandler implements Processor {
 
         //todo: check this
         List<String> currentLevelVideosIds = new ArrayList<>(videoIdsList);
-        while (recursionDepth > 0) {
+
+        for (int i = 0; i < recursionDepth; i++) {
             List<String> relatedVideosIds = new ArrayList<>();
             for (String videoId : currentLevelVideosIds) {
                 for (SearchResult res : getRelatedVideo(videoId)) {
@@ -92,7 +97,6 @@ public class VideoIdHandler implements Processor {
             }
             videoIdsList.addAll(relatedVideosIds);
             currentLevelVideosIds = new ArrayList<>(relatedVideosIds);
-            recursionDepth--;
         }
     }
 

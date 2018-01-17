@@ -13,6 +13,7 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.store.DataStore;
 import com.google.api.client.util.store.FileDataStoreFactory;
 
+import javax.naming.AuthenticationException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -37,7 +38,7 @@ public class Auth {
     /**
      * This is the directory that will be used under the user's home directory where OAuth tokens will be stored.
      */
-    private static final String CREDENTIALS_DIRECTORY = ".oauth-credentials";
+    private static final String CREDENTIALS_DIRECTORY = System.getProperty("user.home")  + "/.oauth-credentials/";
 
     /**
      * Authorizes the installed application to access user's protected data.
@@ -45,7 +46,7 @@ public class Auth {
      * @param scopes              list of scopes needed to run youtube upload.
      * @param credentialDatastore name of the credential datastore to cache OAuth tokens
      */
-    public static Credential authorize(List<String> scopes, String credentialDatastore) throws IOException {
+    public static Credential authorize(List<String> scopes, String credentialDatastore) throws IOException, AuthenticationException {
 
         // Load client secrets.
         Reader clientSecretReader = new InputStreamReader(Auth.class.getResourceAsStream("/client_secret.json"));
@@ -54,14 +55,12 @@ public class Auth {
         // Checks that the defaults have been replaced (Default = "Enter X here").
         if (clientSecrets.getDetails().getClientId().startsWith("Enter")
                 || clientSecrets.getDetails().getClientSecret().startsWith("Enter ")) {
-            System.out.println(
-                    "Enter Client ID and Secret from https://console.developers.google.com/project/_/apiui/credential "
-                            + "into src/main/resources/client_secrets.json");
-            System.exit(1);
+            throw new AuthenticationException("Enter Client ID and Secret from https://console.developers.google.com/project/_/apiui/credential "
+                    + "into src/main/resources/client_secrets.json");
         }
 
         // This creates the credentials datastore at ~/.oauth-credentials/${credentialDatastore}
-        FileDataStoreFactory fileDataStoreFactory = new FileDataStoreFactory(new File(System.getProperty("user.home") + "/" + CREDENTIALS_DIRECTORY));
+        FileDataStoreFactory fileDataStoreFactory = new FileDataStoreFactory(new File(CREDENTIALS_DIRECTORY));
         DataStore<StoredCredential> datastore = fileDataStoreFactory.getDataStore(credentialDatastore);
 
         GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(

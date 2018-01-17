@@ -1,7 +1,10 @@
 package com.crawler.youtube_crawler.worker;
 
+import com.crawler.youtube_crawler.worker.handler.CommentHandler;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableAsync;
 
@@ -10,6 +13,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @EnableAsync
 public class Application {
     public static void main(final String[] arguments) throws Exception {
-        SpringApplication.run(Application.class, arguments);
+        ApplicationContext context =  SpringApplication.run(Application.class, arguments);
+
     }
 }

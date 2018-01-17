@@ -5,10 +5,15 @@ import com.crawler.youtube_crawler.core.constants.JobType;
 import com.crawler.youtube_crawler.core.dto.JobDto;
 import com.crawler.youtube_crawler.core.repository.JobRepository;
 import com.crawler.youtube_crawler.worker.youtubeapi.YouTubeApi;
+import com.google.api.services.youtube.YouTube;
+import com.google.api.services.youtube.YouTubeRequest;
 import com.google.api.services.youtube.model.Comment;
 import com.google.api.services.youtube.model.CommentListResponse;
 import com.google.api.services.youtube.model.CommentThread;
 import com.google.api.services.youtube.model.CommentThreadListResponse;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -22,14 +27,18 @@ import java.util.List;
  * Created by Настя on 20.11.2017.
  */
 @Component
+@RequiredArgsConstructor
+@Slf4j
 public class CommentHandler implements Processor {
 
-    @Autowired
-    private JobRepository repo;
-    @Autowired
-    private YouTubeApi youtube;
+    private final JobRepository jobRepository;
+
+    private final YouTubeApi youtube;
+
     @Value("${youtube.apikey}")
     private String apiKey;
+
+    @Getter
     private List<Comment> commentsList;
 
     @Override
@@ -50,46 +59,31 @@ public class CommentHandler implements Processor {
     private void getVideoComments(String videoId) throws IOException {
         commentsList = new ArrayList<>();
 
-        CommentThreadListResponse videoCommentsListResponse = youtube.getYouTube().commentThreads()
-                .list("snippet")
-                .setVideoId(videoId)
-                .setTextFormat("plainText")
-                .setMaxResults(Long.parseLong("100"))
-                .setKey(apiKey)
-                .execute();
-        for (CommentThread commentTread: videoCommentsListResponse.getItems()){
-            commentsList.add(commentTread.getSnippet().getTopLevelComment());
-        }
+        //todo: for each request is different only next pageToken. You can create one request and to change pageToken
+        CommentThreadListResponse videoCommentsListResponse = commentRequestConfig(videoId).execute();
+        addTopLevelComments(videoCommentsListResponse);
+
         String nextPageToken = videoCommentsListResponse.getNextPageToken();
 
-        boolean allResultsRead = false;
-        while (!allResultsRead) {
-
+        while (nextPageToken != null) {
             try {
-                videoCommentsListResponse = youtube.getYouTube().commentThreads()
-                        .list("snippet")
-                        .setVideoId(videoId)
-                        .setTextFormat("plainText")
-                        .setMaxResults(Long.parseLong("100"))
-                        .setKey(apiKey)
+                videoCommentsListResponse = commentRequestConfig(videoId)
                         .setPageToken(nextPageToken)
                         .execute();
 
-                for (CommentThread commentTread: videoCommentsListResponse.getItems()){
-                    commentsList.add(commentTread.getSnippet().getTopLevelComment());
-                }
+                addTopLevelComments(videoCommentsListResponse);
+                addRepliesComments();
 
                 nextPageToken = videoCommentsListResponse.getNextPageToken();
-                for (Comment comment : commentsList) {
-                    commentsList.addAll(getRepliesToComment(comment.getId()));
-                }
             } catch (Exception e) {
-                System.out.println(e.getLocalizedMessage());
+                log.error(e.getLocalizedMessage());
             }
+        }
+    }
 
-            if (nextPageToken == null) {
-                allResultsRead = true;
-            }
+    private void addRepliesComments() throws IOException {
+        for (Comment comment : commentsList) {
+            commentsList.addAll(getRepliesToComment(comment.getId()));
         }
     }
 
@@ -105,4 +99,18 @@ public class CommentHandler implements Processor {
         return JobType.COMMENT.equals(jobDto.getType());
     }
 
+    private YouTube.CommentThreads.List commentRequestConfig(String videoId) throws IOException {
+        return youtube.getYouTube().commentThreads()
+                .list("snippet")
+                .setVideoId(videoId)
+                .setTextFormat("plainText")
+                .setMaxResults(100L)
+                .setKey(apiKey);
+    }
+
+    private void addTopLevelComments(CommentThreadListResponse videoCommentsListResponse) {
+        for (CommentThread commentTread: videoCommentsListResponse.getItems()){
+            commentsList.add(commentTread.getSnippet().getTopLevelComment());
+        }
+    }
 }

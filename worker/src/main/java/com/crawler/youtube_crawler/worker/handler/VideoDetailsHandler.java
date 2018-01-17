@@ -9,27 +9,31 @@ import com.google.api.client.util.Joiner;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.Video;
 import com.google.api.services.youtube.model.VideoListResponse;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
  * Created by Настя on 20.11.2017.
  */
 @Component
-public class VIdeoDetailsHandler implements  Processor{
+@RequiredArgsConstructor
+public class VideoDetailsHandler implements  Processor{
 
-    @Autowired
-    private JobRepository repo;
+    private final JobRepository jobRepository;
 
-    @Autowired
-    private YouTubeApi youtube;
+    private final YouTubeApi youtube;
+
     @Value("${youtube.apikey}")
     private String apiKey;
+
     private List<Video> videoDetailsList;
 
 
@@ -37,8 +41,7 @@ public class VIdeoDetailsHandler implements  Processor{
     public String accept(JobDto jobDto) {
         try {
             init();
-            ArrayList<String> params = new ArrayList<>();
-            params.add("HkaUhxGqS5g");
+            List<String> params = Arrays.asList("HkaUhxGqS5g");
             getVideosDetails(params); //todo: make possible to set params of search
         } catch (Exception e){
             return JobStatus.FAILED;
