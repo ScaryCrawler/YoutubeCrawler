@@ -1,21 +1,21 @@
 package com.crawler.youtube_crawler.core.dto;
 
+import com.crawler.youtube_crawler.core.constants.JobStatus;
 import lombok.Data;
-import org.hibernate.validator.constraints.NotBlank;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.Value;
 
-import javax.persistence.*;
+import javax.validation.constraints.AssertTrue;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.UUID;
 
-@Entity
-@Table(name = "jobs")
 @Data
-public class JobDto implements Serializable {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-//    private UUID id;
-    private Long id;
-
-    @NotBlank
+public class JobDto implements Serializable{
+    private UUID id;
     private String status;
+    private String type;
+
+    private AdditionalInfo additionalInfo;
 }
