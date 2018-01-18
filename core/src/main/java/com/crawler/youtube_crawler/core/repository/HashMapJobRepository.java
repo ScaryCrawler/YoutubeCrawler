@@ -1,5 +1,7 @@
 package com.crawler.youtube_crawler.core.repository;
 
+import com.crawler.youtube_crawler.core.constants.JobType;
+import com.crawler.youtube_crawler.core.dto.AdditionalInfo;
 import com.crawler.youtube_crawler.core.dto.JobDto;
 import lombok.NonNull;
 import org.springframework.stereotype.Component;
@@ -28,6 +30,15 @@ public class HashMapJobRepository implements JobRepository {
     public JobDto create(@NonNull final JobDto job) {
         job.setId(UUID.randomUUID());
         map.put(job.getId(), job);
+        return job;
+    }
+
+
+    @Override
+    public JobDto create(AdditionalInfo additionalInfo) {
+        JobDto job = create(new JobDto());
+        job.setAdditionalInfo(additionalInfo);
+        job.setType(JobType.VIDEO_ID);
         return job;
     }
 

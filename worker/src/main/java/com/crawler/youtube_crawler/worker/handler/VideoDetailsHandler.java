@@ -31,6 +31,7 @@ public class VideoDetailsHandler implements  Processor{
 
     private final YouTubeApi youtube;
 
+
     @Value("${youtube.apikey}")
     private String apiKey;
 
@@ -43,6 +44,7 @@ public class VideoDetailsHandler implements  Processor{
             init();
             List<String> params = Arrays.asList("HkaUhxGqS5g");
             getVideosDetails(params); //todo: make possible to set params of search
+
         } catch (Exception e){
             return JobStatus.FAILED;
         }

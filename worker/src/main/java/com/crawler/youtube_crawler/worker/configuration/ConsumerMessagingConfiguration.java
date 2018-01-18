@@ -1,10 +1,11 @@
 package com.crawler.youtube_crawler.worker.configuration;
 
 import com.crawler.youtube_crawler.core.dto.JobDto;
+import com.crawler.youtube_crawler.worker.activemq.props.ConsumerProps;
+import lombok.RequiredArgsConstructor;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.apache.activemq.pool.PooledConnectionFactory;
 import org.apache.activemq.spring.ActiveMQConnectionFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.annotation.IntegrationComponentScan;
@@ -23,36 +24,18 @@ import javax.jms.Session;
 @Configuration
 @EnableIntegration
 @IntegrationComponentScan(basePackages = "com.crawler.youtube_crawler.worker")
-public class MessagingConfiguration {
+@RequiredArgsConstructor
+public class ConsumerMessagingConfiguration {
     private final static String QUEUE_NAME = "job_queue";
 
-    @Value("${activemq.broker.url}")
-    private String brokerUrl;
-
-    @Value("${activemq.broker.max.connections}")
-    private int maxConnections;
-
-    @Value("${activemq.broker.max.sessions}")
-    private int maxSessions;
-
-    @Value("${consumer.concurrency}")
-    private String listenerConcurrency;
-
-    @Bean
-    public IntegrationFlow jobFlow() {
-        return IntegrationFlows
-                .from(Jms.messageDrivenChannelAdapter(listenerContainer()))
-                .transform(new JsonToObjectTransformer(JobDto.class))
-                .channel(messageJobChannel())
-                .get();
-    }
+    private final ConsumerProps consumerProps;
 
     @Bean
     public DefaultMessageListenerContainer listenerContainer() {
         final DefaultMessageListenerContainer listenerContainer = new DefaultMessageListenerContainer();
         listenerContainer.setConnectionFactory(pooledConnectionFactory());
         listenerContainer.setDestination(jobQueue());
-        listenerContainer.setConcurrency(listenerConcurrency);
+        listenerContainer.setConcurrency(consumerProps.getListenerConcurrency());
         listenerContainer.setSessionAcknowledgeMode(Session.CLIENT_ACKNOWLEDGE);
 
 
@@ -62,19 +45,17 @@ public class MessagingConfiguration {
     @Bean
     public PooledConnectionFactory pooledConnectionFactory() {
         final PooledConnectionFactory factory = new PooledConnectionFactory(connectionFactory());
-        factory.setMaxConnections(maxConnections);
-        factory.setMaximumActiveSessionPerConnection(maxSessions);
+        factory.setMaxConnections(consumerProps.getMaxConnections());
+        factory.setMaximumActiveSessionPerConnection(consumerProps.getMaxSessions());
         return factory;
     }
-
 
     @Bean
     public ActiveMQConnectionFactory connectionFactory() {
         final ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory();
-        connectionFactory.setBrokerURL(brokerUrl);
+        connectionFactory.setBrokerURL(consumerProps.getBrokerUrl());
         return connectionFactory;
     }
-
     @Bean
     public Queue jobQueue() {
         return new ActiveMQQueue(QUEUE_NAME);
@@ -83,5 +64,14 @@ public class MessagingConfiguration {
     @Bean
     public MessageChannel messageJobChannel() {
         return MessageChannels.direct().get();
+    }
+
+    @Bean
+    public IntegrationFlow jobFlow() {
+        return IntegrationFlows
+                .from(Jms.messageDrivenChannelAdapter(listenerContainer()))
+                .transform(new JsonToObjectTransformer(JobDto.class))
+                .channel(messageJobChannel())
+                .get();
     }
 }

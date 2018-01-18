@@ -1,6 +1,7 @@
 package com.crawler.youtube_crawler.rest_api.service;
 
 import com.crawler.youtube_crawler.core.constants.JobStatus;
+import com.crawler.youtube_crawler.core.dto.AdditionalInfo;
 import com.crawler.youtube_crawler.core.dto.JobDto;
 import com.crawler.youtube_crawler.core.dto.ResultDto;
 import com.crawler.youtube_crawler.core.repository.ResultRepository;
@@ -20,10 +21,9 @@ public class JobService {
     private final ResultRepository resultRepository;
     private final JobSender jobSender;
 
-    public final JobDto createJob(final JobDto jobDto) {
-        final JobDto createdJob = jobRepository.create(jobDto);
+    public final JobDto createJob(AdditionalInfo additionalInfo) {
+        JobDto createdJob = jobRepository.create(additionalInfo);
         createdJob.setStatus(JobStatus.NEW);
-
         try {
             jobSender.sendJob(createdJob);
         }

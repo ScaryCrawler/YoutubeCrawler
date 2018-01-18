@@ -12,10 +12,10 @@ import java.util.Arrays;
 import java.util.UUID;
 
 @Data
-@Setter
-@Getter
 public class JobDto implements Serializable{
     private UUID id;
     private String status;
     private String type;
+
+    private AdditionalInfo additionalInfo;
 }

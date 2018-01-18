@@ -4,6 +4,7 @@ import com.crawler.youtube_crawler.core.constants.JobStatus;
 import com.crawler.youtube_crawler.core.constants.JobType;
 import com.crawler.youtube_crawler.core.dto.JobDto;
 import com.crawler.youtube_crawler.core.repository.JobRepository;
+import com.crawler.youtube_crawler.worker.activemq.producer.JobSender;
 import com.crawler.youtube_crawler.worker.youtubeapi.YouTubeApi;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestInitializer;
@@ -34,6 +35,8 @@ public class VideoIdHandler implements Processor {
 
     private final YouTubeApi youtube;
 
+//    private final JobSender jobSender;
+
     @Value("${youtube.apikey}")
     private String apiKey;
 
@@ -45,7 +48,17 @@ public class VideoIdHandler implements Processor {
     public String accept(JobDto jobDto) {
        try {
            init();
-           executeSearch("Питер", 1 ); //todo: make possible to set params of search
+           executeSearch(jobDto.getAdditionalInfo().getRequest(), jobDto.getAdditionalInfo().getDepth());
+           videoIdsList.forEach(id -> {
+//todo: implement logic for sending task with producer
+//               JobDto createdJob = jobRepository.create(jobDto.getAdditionalInfo());
+//               createdJob.setType(JobType.COMMENT);
+//               jobSender.sendJob(createdJob);
+//
+//               createdJob = jobRepository.create(jobDto.getAdditionalInfo());
+//               createdJob.setType(JobType.VIDEO_DETAILS);
+//               jobSender.sendJob(createdJob);
+           });
        } catch (Exception e){
            return JobStatus.FAILED;
        }
@@ -85,7 +98,6 @@ public class VideoIdHandler implements Processor {
             }
         }
 
-        //todo: check this
         List<String> currentLevelVideosIds = new ArrayList<>(videoIdsList);
 
         for (int i = 0; i < recursionDepth; i++) {
@@ -102,7 +114,7 @@ public class VideoIdHandler implements Processor {
 
     private List<SearchResult> getRelatedVideo(String videoId) throws IOException {
         search.setRelatedToVideoId(videoId)
-                .setMaxResults(Long.parseLong("10")) //todo: replace 10 with totalReplyCount
+                .setMaxResults(10L) //todo: replace 10 with totalReplyCount
                 .setType("video")
                 .setPart("id")
                 .setOrder("viewCount");
