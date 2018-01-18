@@ -1,18 +1,19 @@
 package com.crawler.youtube_crawler.worker.handler;
 
+import com.crawler.youtube_crawler.core.JobUtils;
 import com.crawler.youtube_crawler.core.constants.JobStatus;
 import com.crawler.youtube_crawler.core.constants.JobType;
 import com.crawler.youtube_crawler.core.dto.JobDto;
+import com.crawler.youtube_crawler.core.dto.RequestInfo;
+import com.crawler.youtube_crawler.core.model.UserRequest;
 import com.crawler.youtube_crawler.core.repository.JobRepository;
+import com.crawler.youtube_crawler.core.repository.UserRequestRepository;
+import com.crawler.youtube_crawler.worker.producer.JobSender;
 import com.crawler.youtube_crawler.worker.youtubeapi.YouTubeApi;
-import com.google.api.client.http.HttpRequest;
-import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.SearchListResponse;
 import com.google.api.services.youtube.model.SearchResult;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -26,15 +27,14 @@ import java.util.List;
  */
 @Component
 @RequiredArgsConstructor
-public class VideoIdHandler implements Processor {
+public class VideoIdProcessor implements Processor {
 
-    private final JobRepository jobRepository;
-
-    private static long NUMBER_OF_VIDEOS_RETURNED = 50;
+    @Value("${youtube.videocount:10}")
+    private long numberOfVideosReturned;
 
     private final YouTubeApi youtube;
 
-//    private final JobSender jobSender;
+    private final JobSender jobSender;
 
     @Value("${youtube.apikey}")
     private String apiKey;
@@ -43,25 +43,35 @@ public class VideoIdHandler implements Processor {
 
     private List<String> videoIdsList = new ArrayList<>();
 
+    private final JobRepository jobRepository;
+    private final UserRequestRepository userRequestRepository;
+
     @Override
     public String accept(JobDto jobDto) {
        try {
            init();
-           executeSearch(jobDto.getAdditionalInfo().getRequest(), jobDto.getAdditionalInfo().getDepth());
-           videoIdsList.forEach(id -> {
-//todo: implement logic for sending task with producer
-//               JobDto createdJob = jobRepository.create(jobDto.getAdditionalInfo());
-//               createdJob.setType(JobType.COMMENT);
-//               jobSender.sendJob(createdJob);
-//
-//               createdJob = jobRepository.create(jobDto.getAdditionalInfo());
-//               createdJob.setType(JobType.VIDEO_DETAILS);
-//               jobSender.sendJob(createdJob);
+           RequestInfo requestInfo = JobUtils.extractRequestInfo(jobDto);
+           executeSearch(requestInfo.getText(), requestInfo.getDepth());
+
+           UserRequest userRequest = new UserRequest();
+           userRequest.setRequestText(requestInfo.getText());
+           userRequestRepository.save(userRequest);
+           videoIdsList.forEach(videoId -> {
+               sendJob(userRequest.getId(), videoId, JobType.VIDEO_DETAILS);
+               sendJob(userRequest.getId(), videoId, JobType.COMMENT);
            });
        } catch (Exception e){
            return JobStatus.FAILED;
        }
-        return JobStatus.IN_PROGRESS;
+        return JobStatus.COMPLETED;
+    }
+
+    private void sendJob(String parentId, String videoId, String jobType){
+        JobDto job = new JobDto(JobStatus.NEW, jobType);
+        job.setAdditionalInfo(videoId);
+        job.setParentId(parentId);
+        jobRepository.save(job);
+        jobSender.sendJob(job);
     }
 
     @Override
@@ -79,7 +89,7 @@ public class VideoIdHandler implements Processor {
     }
 
     private void executeSearch(String query, int recursionDepth) throws IOException {
-        search.setType("video").setMaxResults(NUMBER_OF_VIDEOS_RETURNED).setQ(query);
+        search.setType("video").setMaxResults(numberOfVideosReturned).setQ(query);
         boolean allResultsRead = false;
         while (!allResultsRead) {
             SearchListResponse searchResponse = search.execute();
@@ -91,7 +101,7 @@ public class VideoIdHandler implements Processor {
 
             if (nextPageToken == null) {
                 allResultsRead = true;
-                search.setType("video").setMaxResults(NUMBER_OF_VIDEOS_RETURNED).setQ(query);
+                search.setType("video").setMaxResults(numberOfVideosReturned).setQ(query);
             } else {
                 search.setPageToken(nextPageToken);
             }
@@ -113,7 +123,7 @@ public class VideoIdHandler implements Processor {
 
     private List<SearchResult> getRelatedVideo(String videoId) throws IOException {
         search.setRelatedToVideoId(videoId)
-                .setMaxResults(10L) //todo: replace 10 with totalReplyCount
+                .setMaxResults(numberOfVideosReturned)
                 .setType("video")
                 .setPart("id")
                 .setOrder("viewCount");

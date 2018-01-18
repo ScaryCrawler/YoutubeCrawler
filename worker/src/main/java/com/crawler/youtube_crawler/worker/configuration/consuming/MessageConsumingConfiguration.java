@@ -23,8 +23,10 @@ import javax.jms.Session;
 
 @Configuration
 @RequiredArgsConstructor
-public abstract class MessageConsumingConfiguration {
-    private final String queueName;
+@EnableIntegration
+@IntegrationComponentScan(basePackages = "com.crawler.youtube_crawler.worker")
+public class MessageConsumingConfiguration {
+    private final static String QUEUE_NAME = "job_queue";
 
     @Value("${activemq.broker.url}")
     private String brokerUrl;
@@ -53,6 +55,7 @@ public abstract class MessageConsumingConfiguration {
         listenerContainer.setConnectionFactory(pooledConnectionFactory());
         listenerContainer.setDestination(jobQueue());
         listenerContainer.setConcurrency(listenerConcurrency);
+//        listenerContainer.setAutoStartup(false);
         listenerContainer.setSessionAcknowledgeMode(Session.CLIENT_ACKNOWLEDGE);
 
 
@@ -77,7 +80,7 @@ public abstract class MessageConsumingConfiguration {
 
     @Bean
     public Queue jobQueue() {
-        return new ActiveMQQueue(queueName);
+        return new ActiveMQQueue(QUEUE_NAME);
     }
 
     @Bean

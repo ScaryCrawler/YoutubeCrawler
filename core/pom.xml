@@ -105,6 +105,18 @@
             <!--<artifactId>mysql-connector-java</artifactId>-->
             <!--<scope>runtime</scope>-->
         <!--</dependency>-->
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-mongodb</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.apis</groupId>
+            <artifactId>google-api-services-youtube</artifactId>
+            <version>v3-rev187-1.23.0</version>
+        </dependency>
+
     </dependencies>
     <build>
         <finalName>core</finalName>

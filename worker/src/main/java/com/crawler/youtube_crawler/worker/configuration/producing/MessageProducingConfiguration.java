@@ -24,7 +24,7 @@ import java.util.Collections;
 @EnableIntegration
 @IntegrationComponentScan(basePackages = "com.crawler.youtube_crawler.*")
 public class MessageProducingConfiguration {
-    final static String QUEUE_NAME = "subjob_queue";
+    private final static String QUEUE_NAME = "job_queue";
 
     @Value("${activemq.broker.url}")
     private String brokerUrl;

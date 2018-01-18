@@ -6,7 +6,6 @@ import com.crawler.youtube_crawler.core.dto.JobDto;
 import com.crawler.youtube_crawler.core.repository.JobRepository;
 import com.crawler.youtube_crawler.worker.youtubeapi.YouTubeApi;
 import com.google.api.services.youtube.YouTube;
-import com.google.api.services.youtube.YouTubeRequest;
 import com.google.api.services.youtube.model.Comment;
 import com.google.api.services.youtube.model.CommentListResponse;
 import com.google.api.services.youtube.model.CommentThread;
@@ -14,7 +13,6 @@ import com.google.api.services.youtube.model.CommentThreadListResponse;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -29,7 +27,7 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class CommentHandler implements Processor {
+public class CommentProcessor implements Processor {
 
     private final JobRepository jobRepository;
 
@@ -49,17 +47,16 @@ public class CommentHandler implements Processor {
         } catch (Exception e){
             return JobStatus.FAILED;
         }
-        return JobStatus.IN_PROGRESS;
+        return JobStatus.COMPLETED;
     }
 
     private void init(){
-
     }
 
     private void getVideoComments(String videoId) throws IOException {
         commentsList = new ArrayList<>();
 
-        //todo: for each request is different only next pageToken. You can create one request and to change pageToken
+        //todo: for each text is different only next pageToken. You can create one text and to change pageToken
         CommentThreadListResponse videoCommentsListResponse = commentRequestConfig(videoId).execute();
         addTopLevelComments(videoCommentsListResponse);
 

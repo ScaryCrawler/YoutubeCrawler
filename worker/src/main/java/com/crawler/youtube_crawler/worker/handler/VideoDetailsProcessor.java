@@ -9,14 +9,11 @@ import com.google.api.client.util.Joiner;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.Video;
 import com.google.api.services.youtube.model.VideoListResponse;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -25,7 +22,7 @@ import java.util.List;
  */
 @Component
 @RequiredArgsConstructor
-public class VideoDetailsHandler implements  Processor{
+public class VideoDetailsProcessor implements  Processor{
 
     private final JobRepository jobRepository;
 

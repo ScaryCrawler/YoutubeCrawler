@@ -1,21 +1,32 @@
 package com.crawler.youtube_crawler.core.dto;
 
 import com.crawler.youtube_crawler.core.constants.JobStatus;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.Value;
+import com.crawler.youtube_crawler.core.constants.JobType;
+import lombok.*;
+import org.springframework.data.annotation.Id;
 
-import javax.validation.constraints.AssertTrue;
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.UUID;
 
-@Data
+
+@Getter @Setter
+@RequiredArgsConstructor
 public class JobDto implements Serializable{
-    private UUID id;
+    @Id
+    private String id;
+
+    private String parentId;
+
+    @NonNull
     private String status;
+
+    @NonNull
     private String type;
 
-    private AdditionalInfo additionalInfo;
+    /*
+    * Field for additional info.
+    * if type is VIDEO_ID then it contains user request and depth of search as json string
+    * for other types it contains video id as number
+    * */
+    private String additionalInfo;
+
 }

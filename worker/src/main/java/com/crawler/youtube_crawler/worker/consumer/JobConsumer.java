@@ -13,20 +13,25 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class JobConsumer {
-    private final JobRepository jobRepository;
     private final Handler jobHandler;
+    private final JobRepository jobRepository;
 
     @ServiceActivator(inputChannel = "messageJobChannel")
     public final void consumeJob(JobDto job) {
+        if (JobStatus.IN_PROGRESS.equals(job.getStatus()) || JobStatus.COMPLETED.equals(job.getStatus())) return;
 
-        log.info("Job " + job.getId() + " has been taken from queue");
         job.setStatus(JobStatus.IN_PROGRESS);
-        jobRepository.create(job);
+        jobRepository.save(job);
 
-        final String status = jobHandler.accept(job);
+        String status = jobHandler.accept(job);
+        jobRepository.save(job);
 
-        log.info("Job " + job.getId() + " has been handled and finished with status");
-        job.setStatus(status);
-        jobRepository.create(job);
+        if (JobStatus.FAILED.equals(status)){
+            //todo: implement logic for resending job with producer
+            while(JobStatus.FAILED.equals(status)){
+                log.error(String.format("Job #%s (%s) failed. Process was restarted.", job.getId(), job.getType()));
+                status = jobHandler.accept(job);
+            }
+        }
     }
 }
