@@ -11,32 +11,36 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public interface UserRequestRepository extends MongoRepository<UserRequest, String> {
 
-    default UserRequest updateComments(String requestId, String videoId, List<Comment> comments) {
+    default UserRequest updateComments(String requestId, String videoId, List<String> comments) {
         UserRequest userRequest = findOne(requestId);
         if (userRequest == null) return null;
 
-        VideoInfo videoInfo = userRequest.getVideos().get(videoId);
-        if (videoInfo == null) return null;
+        Map<String, VideoInfo> vs = userRequest.getVideos();
+        vs.putIfAbsent(videoId, new VideoInfo());
+
+        VideoInfo videoInfo = vs.get(videoId);
 
         videoInfo.setComments(comments);
         save(userRequest);
         return userRequest;
     }
 
-    default UserRequest addVideo(String requestId, Video video) {
-//        UserRequest userRequest = findOne(requestId);
-//        if (userRequest == null) return null;
-//
-//        VideoInfo videoInfo = userRequest.getVideos().get(video.getId());
-//        if (videoInfo == null) return null;
-//
-//        videoInfo.getVideoDetails().put(video.getId(), video);
-//        save(userRequest);
-//        return userRequest;
-        return null;
+    default UserRequest updateVideoDetails(String requestId, String videoId, List<String> videos) {
+        UserRequest userRequest = findOne(requestId);
+        if (userRequest == null) return null;
+
+        Map<String, VideoInfo> vs = userRequest.getVideos();
+        vs.putIfAbsent(videoId, new VideoInfo());
+
+        VideoInfo videoInfo = vs.get(videoId);
+
+        videoInfo.setVideoDetails(videos);
+        save(userRequest);
+        return userRequest;
     }
 }

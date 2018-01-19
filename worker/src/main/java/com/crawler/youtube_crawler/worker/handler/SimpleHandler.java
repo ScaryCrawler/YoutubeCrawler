@@ -2,6 +2,7 @@ package com.crawler.youtube_crawler.worker.handler;
 
 import com.crawler.youtube_crawler.core.constants.JobStatus;
 import com.crawler.youtube_crawler.core.dto.JobDto;
+import com.crawler.youtube_crawler.worker.processor.Processor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 

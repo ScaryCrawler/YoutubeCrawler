@@ -9,7 +9,11 @@ import java.util.List;
 
 @Getter @Setter
 public class VideoInfo {
-    private List<Video> videoDetails;
+    //todo: fix MappingInstantiationException for google.DateTime
 
-    private List<Comment> comments;
+//    private List<Video> videoDetails;
+    private List<String> videoDetails;
+
+//    private List<Comment> comments;
+    private List<String> comments;
 }

@@ -1,23 +1,20 @@
 package com.crawler.youtube_crawler.core;
 
-import com.crawler.youtube_crawler.core.constants.JobType;
 import com.crawler.youtube_crawler.core.dto.JobDto;
 import com.crawler.youtube_crawler.core.dto.RequestInfo;
-import com.mongodb.util.JSON;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class JobUtils {
-
-    public static String extractVideoId(JobDto job) {
-        if (job.getAdditionalInfo().matches("^\\d+$")) throw new RuntimeException("Not true format for additional info");
-        return job.getAdditionalInfo();
-    }
+    private static final ObjectMapper MAPPER = new ObjectMapper();
 
     public static RequestInfo extractRequestInfo(JobDto job) {
-        if (!job.getAdditionalInfo().matches("^\\d+$")) throw new RuntimeException("Not true format for additional info");
-
-
-        return (RequestInfo)JSON.parse(job.getAdditionalInfo());
+        try {
+            return MAPPER.readValue(job.getAdditionalInfo(), RequestInfo.class);
+        } catch (Exception e) {
+            throw new RuntimeException("Not true format for additional info");
+        }
 
     }
+
 }
 

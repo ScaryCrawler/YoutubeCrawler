@@ -1,9 +1,11 @@
-package com.crawler.youtube_crawler.worker.handler;
+package com.crawler.youtube_crawler.worker.processor;
 
+import com.crawler.youtube_crawler.core.JobUtils;
 import com.crawler.youtube_crawler.core.constants.JobStatus;
 import com.crawler.youtube_crawler.core.constants.JobType;
 import com.crawler.youtube_crawler.core.dto.JobDto;
 import com.crawler.youtube_crawler.core.repository.JobRepository;
+import com.crawler.youtube_crawler.core.repository.UserRequestRepository;
 import com.crawler.youtube_crawler.worker.youtubeapi.YouTubeApi;
 import com.google.api.client.util.Joiner;
 import com.google.api.services.youtube.YouTube;
@@ -25,6 +27,7 @@ import java.util.List;
 public class VideoDetailsProcessor implements  Processor{
 
     private final JobRepository jobRepository;
+    private final UserRequestRepository userRequestRepository;
 
     private final YouTubeApi youtube;
 
@@ -37,15 +40,17 @@ public class VideoDetailsProcessor implements  Processor{
 
     @Override
     public String accept(JobDto jobDto) {
+        jobRepository.updateStatus(jobDto, JobStatus.IN_PROGRESS);
         try {
             init();
-            List<String> params = Arrays.asList("HkaUhxGqS5g");
-            getVideosDetails(params); //todo: make possible to set params of search
-
+            List<String> params = Arrays.asList(JobUtils.extractRequestInfo(jobDto).getVideoId());
+            getVideosDetails(params);
+            userRequestRepository.updateVideoDetails(jobDto.getParentId(), JobUtils.extractRequestInfo(jobDto).getVideoId(),
+                    Arrays.asList((String[])videoDetailsList.stream().map(video -> video.toString()).toArray()));
         } catch (Exception e){
             return JobStatus.FAILED;
         }
-        return JobStatus.IN_PROGRESS;
+        return JobStatus.COMPLETED;
     }
 
     private void init(){

@@ -25,7 +25,7 @@ public class JobService {
 
     public final JobDto createJob(RequestInfo requestInfo) {
         JobDto job = new JobDto(JobStatus.NEW, JobType.VIDEO_ID);
-//        job.setAdditionalInfo(JSON.serialize(requestInfo));
+        job.setAdditionalInfo(requestInfo.toString());
         jobRepository.save(job);
 
         try {
@@ -38,9 +38,8 @@ public class JobService {
         return job;
     }
 
-    public final UserRequest getResults(final String jobId) {
-//        return userRequestRepository.readByJobUuid(UUID.fromString(jobId));
-        return null;
+    public final Collection<UserRequest> getResults() {
+        return userRequestRepository.findAll();
     }
 
     public final JobDto getJob(final String jobId) {

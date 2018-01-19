@@ -1,4 +1,4 @@
-package com.crawler.youtube_crawler.worker.handler;
+package com.crawler.youtube_crawler.worker.processor;
 
 import com.crawler.youtube_crawler.core.dto.JobDto;
 import org.springframework.context.ApplicationContext;

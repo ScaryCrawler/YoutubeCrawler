@@ -1,4 +1,4 @@
-package com.crawler.youtube_crawler.worker.handler;
+package com.crawler.youtube_crawler.worker.processor;
 
 import com.crawler.youtube_crawler.core.JobUtils;
 import com.crawler.youtube_crawler.core.constants.JobStatus;
@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -29,7 +30,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class VideoIdProcessor implements Processor {
 
-    @Value("${youtube.videocount:10}")
+    @Value("${youtube.videocount:1}")
     private long numberOfVideosReturned;
 
     private final YouTubeApi youtube;
@@ -48,6 +49,7 @@ public class VideoIdProcessor implements Processor {
 
     @Override
     public String accept(JobDto jobDto) {
+        jobRepository.updateStatus(jobDto, JobStatus.IN_PROGRESS);
        try {
            init();
            RequestInfo requestInfo = JobUtils.extractRequestInfo(jobDto);
@@ -55,10 +57,12 @@ public class VideoIdProcessor implements Processor {
 
            UserRequest userRequest = new UserRequest();
            userRequest.setRequestText(requestInfo.getText());
+           userRequest.setVideos(new HashMap<>());
            userRequestRepository.save(userRequest);
+
            videoIdsList.forEach(videoId -> {
-               sendJob(userRequest.getId(), videoId, JobType.VIDEO_DETAILS);
                sendJob(userRequest.getId(), videoId, JobType.COMMENT);
+               sendJob(userRequest.getId(), videoId, JobType.VIDEO_DETAILS);
            });
        } catch (Exception e){
            return JobStatus.FAILED;
@@ -68,7 +72,11 @@ public class VideoIdProcessor implements Processor {
 
     private void sendJob(String parentId, String videoId, String jobType){
         JobDto job = new JobDto(JobStatus.NEW, jobType);
-        job.setAdditionalInfo(videoId);
+
+        RequestInfo requestInfo = new RequestInfo();
+        requestInfo.setVideoId(videoId);
+        job.setAdditionalInfo(requestInfo.toString());
+
         job.setParentId(parentId);
         jobRepository.save(job);
         jobSender.sendJob(job);
@@ -91,7 +99,7 @@ public class VideoIdProcessor implements Processor {
     private void executeSearch(String query, int recursionDepth) throws IOException {
         search.setType("video").setMaxResults(numberOfVideosReturned).setQ(query);
         boolean allResultsRead = false;
-        while (!allResultsRead) {
+        for (int i = 0; i < numberOfVideosReturned && !allResultsRead; i++) {
             SearchListResponse searchResponse = search.execute();
             for (SearchResult res : searchResponse.getItems()) {
                 videoIdsList.add(res.getId().getVideoId());

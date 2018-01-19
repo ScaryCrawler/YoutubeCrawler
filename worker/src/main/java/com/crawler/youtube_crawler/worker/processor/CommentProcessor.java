@@ -1,9 +1,11 @@
-package com.crawler.youtube_crawler.worker.handler;
+package com.crawler.youtube_crawler.worker.processor;
 
+import com.crawler.youtube_crawler.core.JobUtils;
 import com.crawler.youtube_crawler.core.constants.JobStatus;
 import com.crawler.youtube_crawler.core.constants.JobType;
 import com.crawler.youtube_crawler.core.dto.JobDto;
 import com.crawler.youtube_crawler.core.repository.JobRepository;
+import com.crawler.youtube_crawler.core.repository.UserRequestRepository;
 import com.crawler.youtube_crawler.worker.youtubeapi.YouTubeApi;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.Comment;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -30,8 +33,10 @@ import java.util.List;
 public class CommentProcessor implements Processor {
 
     private final JobRepository jobRepository;
+    private final UserRequestRepository userRequestRepository;
 
     private final YouTubeApi youtube;
+
 
     @Value("${youtube.apikey}")
     private String apiKey;
@@ -41,9 +46,12 @@ public class CommentProcessor implements Processor {
 
     @Override
     public String accept(JobDto jobDto) {
+        jobRepository.updateStatus(jobDto, JobStatus.IN_PROGRESS);
         try {
             init();
-            getVideoComments("HkaUhxGqS5g" ); //todo: make possible to set params of search
+            getVideoComments(JobUtils.extractRequestInfo(jobDto).getVideoId());
+            userRequestRepository.updateComments(jobDto.getParentId(), JobUtils.extractRequestInfo(jobDto).getVideoId(),
+                    Arrays.asList((String[])commentsList.stream().map(comment -> comment.toString()).toArray()));
         } catch (Exception e){
             return JobStatus.FAILED;
         }

@@ -1,7 +1,5 @@
 package com.crawler.youtube_crawler.worker;
 
-import com.crawler.youtube_crawler.core.dto.JobDto;
-import com.crawler.youtube_crawler.worker.producer.JobSender;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
