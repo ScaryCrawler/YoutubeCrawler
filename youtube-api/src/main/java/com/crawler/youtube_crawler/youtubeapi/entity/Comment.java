@@ -12,6 +12,8 @@ public class Comment {
 
     private String commentId;
 
+    private String jobId;
+
     private String author;
 
     private int likes;

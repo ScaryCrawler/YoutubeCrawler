@@ -8,6 +8,8 @@ public class Video {
     @Id
     private String id;
 
+    private String jobId;
+
     private String videoId;
 
     private String author;

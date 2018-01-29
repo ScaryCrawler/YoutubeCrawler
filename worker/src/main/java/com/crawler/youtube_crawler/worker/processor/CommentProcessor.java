@@ -46,7 +46,8 @@ public class CommentProcessor implements Processor {
 
             YouTubeParser<Video> videoParser = new VideoParser(response);
             Video video = videoParser.parse(requestInfo.getVideoId());
-            log.info("Data and info parsed successfully for CommentProcessor");
+            video.setJobId(job.getId());
+            log.info("Data and info parsed successfully for Video entity");
             videoRepository.save(video);
 
             ContinuationInfo info = videoParser.parseContinuationData();
@@ -58,13 +59,14 @@ public class CommentProcessor implements Processor {
                 YouTubeParser<List<Comment>> commentsParser = new CommentsParser(response);
 
                 List<Comment> comments = commentsParser.parse(video.getVideoId());
+                comments.forEach(comment -> comment.setJobId(job.getId()));
                 commentRepository.save(comments);
 
                 count += comments.size();
 
                 ContinuationInfo newInfo = commentsParser.parseContinuationData();
                 info = mergeContinuation(info, newInfo);
-                log.info("Data and info parsed successfully for CommentProcessor");
+                log.info("Data and info parsed successfully for Comment entity");
             }
 
         } catch (Exception e){
