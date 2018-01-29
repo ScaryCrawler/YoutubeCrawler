@@ -46,6 +46,7 @@ public class JobService {
             jobSender.sendJob(job);
         }
         catch (Exception e){
+            
             throw new RuntimeException(String.format("Failed to send message to Jms queue. Root cause: %s", e.getMessage()));
         }
 
