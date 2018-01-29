@@ -12,5 +12,6 @@
         <module>rest-api</module>
         <module>worker</module>
         <module>core</module>
+        <module>youtube-api</module>
     </modules>
 </project>

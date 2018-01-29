@@ -1,0 +1,44 @@
+activemq:
+    broker:
+        max:
+            connections: 10
+            sessions: 10
+        url: tcp://localhost:61616
+    task:
+        processing:
+            limit: 30000000
+consumer:
+    concurrency: 1-5
+server:
+    port: 8086
+spring:
+    data:
+        mongodb:
+            database: crawler
+youtube:
+    apikey: AIzaSyAl7_Bo2ixdzUSEQ0dh_8BBh7S_ft7RGCo
+
+    videocount: 1
+circle:
+  delay: 16
+  proxies:
+    - host: 194.28.50.81
+      port: 3128
+    - host: 82.215.71.70
+      port: 3128
+    - host: 89.236.17.108
+      port: 3128
+    - host: 211.237.218.19
+      port: 3128
+    - host: 194.28.50.80
+      port: 3128
+    - host: 186.227.8.21
+      port: 3128
+    - host: 136.144.144.205
+      port: 3128
+    - host: 163.172.217.103
+      port: 3128
+    - host: 95.31.81.72
+      port: 53281
+    - host: 37.59.47.13
+      port: 3128

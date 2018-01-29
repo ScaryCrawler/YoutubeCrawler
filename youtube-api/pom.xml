@@ -5,54 +5,26 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.crawler.youtube_crawler</groupId>
-    <artifactId>worker</artifactId>
+    <artifactId>youtube-api</artifactId>
     <version>1.0</version>
     <packaging>jar</packaging>
+
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.5.9.RELEASE</version>
+        <version>1.4.0.RELEASE</version>
     </parent>
 
     <properties>
+        <!--<start-class>com.crawler.youtube_crawler.rest_api.Application</start-class>-->
         <maven-compiler-plugin.version>2.3.2</maven-compiler-plugin.version>
         <jdk.version>1.8</jdk.version>
-        <jackson.version>2.8.8</jackson.version>
+        <jackson.version>2.7.4</jackson.version>
     </properties>
 
+
+
     <dependencies>
-        <dependency>
-            <groupId>com.crawler.youtube_crawler</groupId>
-            <artifactId>core</artifactId>
-            <version>1.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId>
-            <!--<version>1.4.0.RELEASE</version>-->
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.fasterxml.jackson.dataformat</groupId>
-            <artifactId>jackson-dataformat-csv</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <version>1.4.0.RELEASE</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.crawler.youtube_crawler</groupId>
-            <artifactId>youtube-api</artifactId>
-            <version>1.0</version>
-        </dependency>
-
         <dependency>
             <groupId>com.jayway.restassured</groupId>
             <artifactId>rest-assured</artifactId>
@@ -60,20 +32,28 @@
         </dependency>
 
         <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.16.12</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-mongodb</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
         </dependency>
 
     </dependencies>
 
     <build>
-        <finalName>worker</finalName>
+        <finalName>youtube-api</finalName>
 
         <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -85,5 +65,6 @@
             </plugin>
         </plugins>
     </build>
+
 
 </project>

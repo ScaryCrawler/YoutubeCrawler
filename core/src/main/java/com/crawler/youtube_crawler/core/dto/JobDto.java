@@ -22,11 +22,4 @@ public class JobDto implements Serializable{
     @NonNull
     private String type;
 
-    /*
-    * Field for additional info.
-    * if type is VIDEO_ID then it contains user request and depth of search as json string
-    * for other types it contains video id as number
-    * */
-    private String additionalInfo;
-
 }

@@ -11,7 +11,6 @@ import java.util.List;
 
 @Component
 public class SimpleHandler implements Handler {
-    //TODO: implement logic of data retrieval
 
     private final ApplicationContext applicationContext;
     private final List<String> processorNames;

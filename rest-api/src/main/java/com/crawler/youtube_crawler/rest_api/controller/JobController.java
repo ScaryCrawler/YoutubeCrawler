@@ -1,19 +1,13 @@
 package com.crawler.youtube_crawler.rest_api.controller;
 
-import com.crawler.youtube_crawler.core.dto.RequestInfo;
+import com.crawler.youtube_crawler.core.entity.RequestInfo;
 import com.crawler.youtube_crawler.core.dto.JobDto;
-import com.crawler.youtube_crawler.core.model.UserRequest;
-import com.crawler.youtube_crawler.core.repository.JobRepository;
-import com.crawler.youtube_crawler.core.repository.UserRequestRepository;
 import com.crawler.youtube_crawler.rest_api.service.JobService;
-import com.google.api.client.util.DateTime;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
-import java.util.Date;
 
 @RestController
 @RequestMapping(value = "job")
@@ -24,13 +18,13 @@ final class JobController {
 
     @RequestMapping(method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
-    public final JobDto create(@RequestBody RequestInfo requestInfo) {
-        return service.createJob(requestInfo);
+    public final JobDto create(@RequestParam String query, @RequestParam int videoCount, @RequestParam int commentsCount) {
+        return service.createJob(query, videoCount, commentsCount);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/results")
     @ResponseStatus(HttpStatus.OK)
-    public final Collection<UserRequest> getResult() {
+    public final Collection<?> getResult() {
         return service.getResults();
     }
 
