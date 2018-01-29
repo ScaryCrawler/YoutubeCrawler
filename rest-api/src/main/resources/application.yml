@@ -1,0 +1,14 @@
+activemq:
+    broker:
+        url: tcp://localhost:61616
+    task:
+        processing:
+            limit: 30000000
+request-helper:
+    timeout: 2
+server:
+    port: 8086
+spring:
+    data:
+        mongodb:
+            database: crawler

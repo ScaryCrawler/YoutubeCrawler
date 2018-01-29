@@ -24,7 +24,7 @@ request-helper:
   timeout: 2
 
 circle:
-  delay: 16
+  delay: 8
   proxies:
     - host: 194.28.50.81
       port: 3128
