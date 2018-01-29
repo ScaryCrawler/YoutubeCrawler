@@ -9,16 +9,20 @@ activemq:
             limit: 30000000
 consumer:
     concurrency: 1-5
+
 server:
     port: 8086
+
 spring:
     data:
         mongodb:
             database: crawler
-youtube:
-    apikey: AIzaSyAl7_Bo2ixdzUSEQ0dh_8BBh7S_ft7RGCo
+            host: localhost
+            port: 27017
 
-    videocount: 1
+request-helper:
+  timeout: 2
+
 circle:
   delay: 16
   proxies:

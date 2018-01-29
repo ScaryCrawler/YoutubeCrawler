@@ -6,6 +6,8 @@ import com.crawler.youtube_crawler.youtubeapi.proxy.ProxyGenerator;
 import com.jayway.restassured.response.Response;
 import com.jayway.restassured.specification.RequestSpecification;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.TimeUnit;
@@ -19,11 +21,15 @@ public class YouTubeRequestHelper implements RequestHelper {
 
     private final ProxyGenerator proxyGenerator;
 
+    @Setter
+    @Value("${request-helper.timeout}")
+    private int timeout;
+
     @Override
     public RequestSpecification baseGetRequest() {
         Proxy proxy = proxyGenerator.next();
         try {
-            TimeUnit.SECONDS.sleep(2);
+            TimeUnit.SECONDS.sleep(timeout);
         } catch (Exception e) {
 
         }
@@ -57,6 +63,7 @@ public class YouTubeRequestHelper implements RequestHelper {
                 .queryParam("search_query", query)
                 .post("results");
 //        response.then().log().all();
+        if (response.getStatusCode() != 200) proxyGenerator.forceNext();
 
         return response;
     }
@@ -68,7 +75,7 @@ public class YouTubeRequestHelper implements RequestHelper {
                 .get("results");
 
 //        response.then().log().all();
-
+        if (response.getStatusCode() != 200) proxyGenerator.forceNext();
         return response;
     }
 
@@ -80,7 +87,7 @@ public class YouTubeRequestHelper implements RequestHelper {
                 .post("comment_service_ajax");
 
 //        response.then().log().all();
-
+        if (response.getStatusCode() != 200) proxyGenerator.forceNext();
         return response;
     }
 
@@ -91,6 +98,7 @@ public class YouTubeRequestHelper implements RequestHelper {
                 .queryParam("v", videoId)
                 .get("watch");
 
+        if (response.getStatusCode() != 200) proxyGenerator.forceNext();
 //        response.then().log().all();
 
         return response;
